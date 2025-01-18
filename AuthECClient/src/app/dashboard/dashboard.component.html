@@ -1,0 +1,88 @@
+<mat-sidenav-container class="dashboard-container">
+  <!-- Side Navigation -->
+  <mat-sidenav mode="side" opened class="sidenav">
+    <mat-toolbar>Dashboard</mat-toolbar>
+    <mat-nav-list>
+      <ng-container *ngIf="isAdmin">
+        <a mat-list-item (click)="onTabChange('Tab A')">Tab A</a>
+        <a mat-list-item (click)="onTabChange('Tab B')">Tab B</a>
+        <a mat-list-item (click)="onTabChange('Tab C')">Tab C</a>
+        <a mat-list-item routerLink="/request" routerLinkActive="active">Requests</a>
+        <a mat-list-item (click)="onTabChange('Messages')">Messages</a>
+      </ng-container>
+      <ng-container *ngIf="!isAdmin">
+        <a mat-list-item (click)="onTabChange('Tab D')">Tab D</a>
+        <a mat-list-item (click)="onTabChange('Tab E')">Tab E</a>
+        <a mat-list-item (click)="onTabChange('Tab F')">Tab F</a>
+        <a mat-list-item (click)="onTabChange('Messages')">Messages</a>
+      </ng-container>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar>Welcome to the Role-Based Dashboard</mat-toolbar>
+
+    <div class="content">
+      <!-- Show content based on the selected tab -->
+      <div *ngIf="selectedTab === 'Messages'">
+        <!-- Messages Section -->
+        <div class="message-container">
+          <div
+            class="message-wrapper"
+            *ngFor="let message of messages"
+            [ngClass]="{
+              'sent': message.sender.toLowerCase() === currentRole.toLowerCase(),
+              'received': message.sender.toLowerCase() !== currentRole.toLowerCase()
+            }"
+          >
+            <mat-card class="message-card">
+              <mat-card-header>
+                <mat-card-title>{{ message.sender }}</mat-card-title>
+                <mat-card-subtitle>
+                  To: {{ message.receiver }} | {{ message.timestamp | date: 'medium' }}
+                </mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                {{ message.messageText }}
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <!-- Message Form -->
+        <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-form">
+          <mat-form-field appearance="fill">
+            <mat-label>Message</mat-label>
+            <input matInput placeholder="Enter your message" formControlName="content" />
+            <mat-error *ngIf="messageForm.get('content')?.errors?.['required']">
+              Message is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Select recipient</mat-label>
+            <mat-select formControlName="receiver">
+              <mat-option *ngFor="let group of groups" [value]="group">
+                {{ group }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="messageForm.get('receiver')?.errors?.['required']">
+              Recipient is required
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="!messageForm.valid">
+            Send Message
+          </button>
+        </form>
+      </div>
+
+      <div *ngIf="selectedTab && selectedTab !== 'Messages'">
+        <h2>{{ selectedTab }}</h2>
+        <p>This is {{ selectedTab }}.</p>
+      </div>
+
+      <p class="timeout-warning" *ngIf="timeoutWarning">{{ timeoutWarning }}</p>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

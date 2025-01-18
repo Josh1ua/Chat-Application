@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+  <!-- Home button -->
+  <button mat-button routerLink="/dashboard" routerLinkActive="active">Home</button>
+
+  <!-- Spacer to push the Logout, Login, and Register to the right -->
+  <span class="spacer"></span>
+
+  <!-- Show logout if user is logged in -->
+  <button *ngIf="isLoggedIn" mat-button (click)="logout()">Logout</button>
+  <button *ngIf="!isLoggedIn" mat-button routerLink="/login">Login</button>
+  <button *ngIf="!isLoggedIn" mat-button routerLink="/register">Register</button>
+</mat-toolbar>
+<router-outlet></router-outlet>

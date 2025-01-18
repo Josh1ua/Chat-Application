@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="row vh-100 align-items-center">
+    <div class="col-xxl-4 offset-xxl-4 col-lg-6 offset-lg-3 col-10 offset-1">
+      <div
+        class="rounded-4 border-0 shadow-lg bg-white"
+        style="min-height: 450px"
+      >
+        <div class="d-flex justify-content-start align-items-center">
+          <div class="p-5 w-100">
+            <form
+              [formGroup]="form"
+              (ngSubmit)="onSubmit()"
+              class="registration-form"
+            >
+              <div class="form-field">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Full Name</mat-label>
+                  <input matInput formControlName="fullName" required />
+                  <mat-error *ngIf="fullName?.hasError('required')">
+                    Full name is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-field">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email</mat-label>
+                  <input
+                    matInput
+                    placeholder="pat@example.com"
+                    formControlName="email"
+                    (blur)="updateErrorMessage()"
+                    required
+                  />
+                  <mat-error *ngIf="email?.hasError('required')">
+                    Email is required
+                  </mat-error>
+                  <mat-error *ngIf="email?.hasError('email')">
+                    Invalid email address
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-field">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Password</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="password"
+                    required
+                  />
+                  <mat-error *ngIf="password?.hasError('required')">
+                    Password is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-field">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Confirm Password</mat-label>
+                  <input
+                    matInput
+                    type="password"
+                    formControlName="confirmPassword"
+                    required
+                  />
+                  <mat-error *ngIf="confirmPassword?.hasError('required')">
+                    Confirm Password is required
+                  </mat-error>
+                  <mat-error *ngIf="form.errors?.['mismatch']">
+                    Passwords do not match
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- New Select Type Field -->
+              <div class="form-field">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Select Type</mat-label>
+                  <mat-select formControlName="userType" required>
+                    <mat-option value="admin">Admin</mat-option>
+                    <mat-option value="user">User</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="userType?.hasError('required')">
+                    User type is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid"
+                class="submit-button"
+              >
+                Register
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

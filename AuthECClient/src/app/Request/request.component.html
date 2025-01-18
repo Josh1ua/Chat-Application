@@ -1,0 +1,20 @@
+<div class="content">
+    <mat-card *ngFor="let request of requests" class="message-card">
+      <mat-card-header>
+        <mat-card-title>{{ request.fullName }} ({{ request.email }})</mat-card-title>
+        <mat-card-subtitle>Requested Role: {{ request.userType }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="approveRequest(request, 'admin')">
+          Approve as Admin
+        </button>
+        <button mat-raised-button color="accent" (click)="approveRequest(request, 'user')">
+          Approve as User
+        </button>
+        <button mat-raised-button color="warn" (click)="rejectRequest(request._id, request._rev)">
+          Reject
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  
