@@ -1,0 +1,84 @@
+<div class="message-container">
+    <div
+      class="message-wrapper"
+      *ngFor="let message of messages"
+      [ngClass]="{
+        'sent': message.sender === currentUser,
+        'received': message.sender !== currentUser
+      }"      
+    >
+      <mat-card class="message-card">
+        <mat-card-header>
+          <mat-card-title>{{ message.sender }}</mat-card-title>
+          <mat-card-subtitle>
+            To: {{ message.receiver }} | {{ message.timestamp | date: 'medium' }}
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          {{ message.message }}
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  
+  <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-form">
+    <mat-form-field appearance="fill">
+      <mat-label>Message</mat-label>
+      <input matInput placeholder="Enter your message" formControlName="content" />
+      <mat-error *ngIf="messageForm.get('content')?.errors?.['required']">
+        Message is required
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Recipient Type</mat-label>
+      <mat-select formControlName="recipientType" (selectionChange)="onRecipientTypeChange($event.value)">
+        <mat-option value="Individual">Individual</mat-option>
+        <mat-option value="Group">Group</mat-option>
+      </mat-select>
+      <mat-error *ngIf="messageForm.get('recipientType')?.errors?.['required']">
+        Please select a recipient type
+      </mat-error>
+    </mat-form-field>
+  
+    <div *ngIf="isIndividual">
+      <mat-form-field appearance="fill">
+        <mat-label>Recipient Email</mat-label>
+        <mat-select formControlName="individualEmail">
+          <mat-option
+            *ngFor="let user of users"
+            [value]="user.email"
+            (click)="selectRecipientEmail(user.email)"
+          >
+            {{ user.fullName }} ({{ user.email }})
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="messageForm.get('individualEmail')?.errors?.['required']">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="messageForm.get('individualEmail')?.errors?.['email']">
+          Please enter a valid email
+        </mat-error>
+      </mat-form-field>
+    </div>
+    
+  
+    <div *ngIf="isGroup">
+      <mat-form-field appearance="fill">
+        <mat-label>Select Group</mat-label>
+        <mat-select formControlName="groupRecipient">
+          <mat-option *ngFor="let group of groups" [value]="group">
+            {{ group }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="messageForm.get('groupRecipient')?.errors?.['required']">
+          Please select a group
+        </mat-error>
+      </mat-form-field>
+    </div>
+  
+    <button mat-raised-button color="primary" type="submit" [disabled]="!messageForm.valid">
+      Send Message
+    </button>
+  </form>
+  

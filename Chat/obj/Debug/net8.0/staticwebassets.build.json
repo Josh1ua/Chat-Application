@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "JPR+wwDFcw3HWSM367Gp5R009PUwIaM4+ulojYRrSAk=",
+  "Hash": "ghiFBStwH7t/S+4ZnoIppq5l9NHTYycSoZD1Os1j4zM=",
   "Source": "Chat",
   "BasePath": "_content/Chat",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

@@ -148,3 +148,7 @@ C:\Users\Joshua\source\repos\Chat\Chat\bin\Debug\net8.0\Microsoft.Extensions.Dia
 C:\Users\Joshua\source\repos\Chat\Chat\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
 C:\Users\Joshua\source\repos\Chat\Chat\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
 C:\Users\Joshua\source\repos\Chat\Chat\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\Joshua\source\repos\Chat\Chat\bin\Debug\net8.0\Chat.staticwebassets.endpoints.json
+C:\Users\Joshua\source\repos\Chat\Chat\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\Joshua\source\repos\Chat\Chat\obj\Debug\net8.0\staticwebassets\msbuild.Chat.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+C:\Users\Joshua\source\repos\Chat\Chat\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

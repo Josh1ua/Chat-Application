@@ -7,6 +7,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Cryptography;
+using Chat.Controllers;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Api.Controllers;
 
@@ -26,21 +29,57 @@ public class UsersController : ControllerBase
 
     [HttpGet("user-info")]
     [Authorize]
-    public IActionResult GetUserInfo()
+    public async Task<IActionResult> GetUserInfo()
     {
         var userEmail = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-        return Ok(new { email = userEmail, role = userRole });
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return BadRequest("User email not found.");
+        }
+
+        
+        var userDoc = await _couchDbService.GetUserByEmailAsync(userEmail);
+
+        if (userDoc == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        return Ok(userDoc);
     }
+
+    [HttpGet("get-all-users")]
+    [Authorize]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        try
+        {
+            var users = await _couchDbService.GetAllUsersAsync();
+
+            var userSummaries = users.Select(user => new
+            {
+                user.fullName,
+                user.Email,
+                user.Approved
+            });
+
+            return Ok(userSummaries);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching users: {ex.Message}");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
+
+
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(User user)
     {
-        // Ensure `Approved` is set to `false` for new registrations
         user.Approved = false;
 
-        // Validate required fields
         if (string.IsNullOrEmpty(user.fullName) || string.IsNullOrEmpty(user.Email) ||
             string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.userType))
         {
@@ -49,9 +88,8 @@ public class UsersController : ControllerBase
 
         try
         {
-            // Call CouchDB service to add the user
             await _couchDbService.AddUserAsync(user);
-            Console.WriteLine("User registered successfully.");
+            
             return Ok(new { message = "Request Sent Successfully." });
         }
         catch (Exception ex)
@@ -97,13 +135,12 @@ public class UsersController : ControllerBase
 
             var token = GenerateJwtToken(existingUserDoc);
 
-            // Set the token in an HttpOnly cookie
             Response.Cookies.Append("auth_token", token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddHours(1)
+                Expires = DateTime.UtcNow.AddDays(30)
             });
 
             Console.WriteLine("User logged in successfully.");
@@ -129,18 +166,15 @@ public class UsersController : ControllerBase
 
         try
         {
-            // Retrieve the user document from CouchDB
             var existingUserDoc = await _couchDbService.GetUserByEmailAsync(userEmail);
             if (existingUserDoc == null)
             {
                 return BadRequest("User not found.");
             }
 
-            // Update the IsLoggedIn field to false
             existingUserDoc.IsLoggedIn = false;
             await _couchDbService.UpdateUserAsync(existingUserDoc);
 
-            // Remove the auth token from cookies
             Response.Cookies.Delete("auth_token");
             return Ok(new { message = "Logged out successfully." });
         }
@@ -155,7 +189,6 @@ public class UsersController : ControllerBase
 
     private string GenerateJwtToken(User user)
     {
-        // Fetch JWT configuration values from appsettings.json
         var jwtKey = _configuration["Jwt:Key"];
         var jwtIssuer = _configuration["Jwt:Issuer"];
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
@@ -163,8 +196,8 @@ public class UsersController : ControllerBase
         var claims = new[]
         {
         new Claim(ClaimTypes.NameIdentifier, user.Email),
-        new Claim(ClaimTypes.Role, user.userType) // Add the role claim
-    };
+        new Claim(ClaimTypes.Role, user.userType) 
+        };
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -179,5 +212,4 @@ public class UsersController : ControllerBase
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-
 }

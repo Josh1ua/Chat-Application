@@ -8,7 +8,7 @@ import { NgIf } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthService } from '../../Services/AuthService'; // Make sure path is correct
+import { AuthService } from '../../Services/AuthService';
 
 interface LoginResponse {
   message: string;
@@ -36,7 +36,7 @@ export class LoginComponent {
   constructor(
     private http: HttpClient, 
     private router: Router,
-    private authService: AuthService  // Add AuthService
+    private authService: AuthService
   ) {
     this.form = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -71,7 +71,6 @@ export class LoginComponent {
   }
 
   ngOnInit(): void {
-    // Redirect to the dashboard if already logged in
     this.authService.isLoggedIn$.subscribe((loggedIn) => {
       if (loggedIn) {
         this.router.navigate(['/dashboard']);
@@ -90,7 +89,7 @@ export class LoginComponent {
         next: (response) => {
           console.log('Login successful', response);
           alert(response.message);
-          this.authService.setLoggedIn(true);  // Set login state
+          this.authService.setLoggedIn(true);
           this.router.navigate(['/dashboard'], { 
             state: { role: response.role } 
           });

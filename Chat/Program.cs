@@ -7,9 +7,9 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -23,13 +23,11 @@ builder.Services.AddCors(options =>
               .AllowCredentials()
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .SetIsOriginAllowed(origin => true); // For SignalR
+              .SetIsOriginAllowed(origin => true);
     });
 });
 
-// JWT Authentication Configuration
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "SuperSecretKey"; // Default if not in config
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "SuperSecretKey";
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "https://localhost";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -43,15 +41,44 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtIssuer,
             ValidAudience = jwtIssuer,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var token = context.Request.Cookies["auth_token"];
+
+                // Check if the request is for SignalR
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    path.StartsWithSegments("/messageHub"))
+                {
+                    context.Token = accessToken;
+                }
+                else if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception is SecurityTokenExpiredException)
+                {
+                    context.Response.Headers.Add("Token-Expired", "true");
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
 var app = builder.Build();
-app.MapHub<MessageHub>("/messageHub");
 
-
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -59,23 +86,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAngularApp");
-
-app.Use(async (context, next) =>
-{
-    var token = context.Request.Cookies["auth_token"];
-    if (!string.IsNullOrEmpty(token))
-    {
-        context.Request.Headers.Add("Authorization", $"Bearer {token}");
-    }
-    await next();
-});
-
+app.UseRouting();
 app.UseHttpsRedirection();
 
-// Add Authentication Middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<MessageHub>("/messageHub");
+    endpoints.MapControllers();
+});
 
 app.Run();

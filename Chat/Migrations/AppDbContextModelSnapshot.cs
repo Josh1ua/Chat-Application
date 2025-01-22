@@ -22,30 +22,38 @@ namespace Chat.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Chat.Models.Message", b =>
+            modelBuilder.Entity("Chat.Models.MessageModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
-                    b.Property<string>("MessageText")
+                    b.Property<string>("MessageType")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Receiver")
+                    b.Property<string>("message")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Sender")
+                    b.Property<string>("receiver")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Timestamp")
+                    b.Property<string>("sender")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("sender_role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("timestamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.ToTable("Messages");
                 });

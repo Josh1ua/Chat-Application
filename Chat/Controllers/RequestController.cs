@@ -2,6 +2,7 @@
 using Chat.Models;
 using Chat.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,10 +13,12 @@ namespace Chat.Controllers
     public class RequestController : ControllerBase
     {
         private readonly CouchDbService _couchDbService;
+        private readonly IHubContext<MessageHub> _hubContext;
 
-        public RequestController()
+        public RequestController(IHubContext<MessageHub> hubContext)
         {
             _couchDbService = new CouchDbService();
+            _hubContext = hubContext;
         }
 
         [HttpGet("pending")]
@@ -23,7 +26,6 @@ namespace Chat.Controllers
         {
             try
             {
-                // Query to fetch users with "Approved" set to false
                 var query = new
                 {
                     selector = new
@@ -63,10 +65,16 @@ namespace Chat.Controllers
 
                 user.Approved = true;
                 user.userType = request.Role;
-                user._id = request._id; // Set _id for CouchDB
-                user._rev = request._rev; // Set _rev for CouchDB
+                user._id = request._id; 
+                user._rev = request._rev;
 
                 await _couchDbService.UpdateUserAsync(user);
+
+                await _hubContext.Clients.All.SendAsync("UserAdded", new
+                {
+                    user.fullName,
+                    user.Email
+                });
 
                 return Ok(new { message = "User approved" });
             }
@@ -82,11 +90,9 @@ namespace Chat.Controllers
         {
             try
             {
-                // Fetch user by ID
                 var user = await _couchDbService.GetUserByIdAsync(request.Id);
                 if (user == null) return NotFound("User not found");
 
-                // Delete user document
                 await _couchDbService.DeleteUserAsync(request.Id, user._rev);
 
                 return Ok(new {message= "User rejected" });

@@ -7,8 +7,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
 import { NgIf } from '@angular/common';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router'; // Import Router
-import { AuthService } from '../../Services/AuthService'; // Make sure the path to AuthService is correct
+import { Router } from '@angular/router';
+import { AuthService } from '../../Services/AuthService';
 
 @Component({
   selector: 'app-registration',
@@ -48,7 +48,6 @@ export class RegistrationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Redirect to dashboard if already logged in
     this.authService.isLoggedIn$.subscribe((loggedIn) => {
       if (loggedIn) {
         this.router.navigate(['/dashboard']);
@@ -56,7 +55,6 @@ export class RegistrationComponent implements OnInit {
     });
   }
 
-  // Getters for form controls
   get fullName() {
     return this.form.get('fullName');
   }
@@ -77,7 +75,6 @@ export class RegistrationComponent implements OnInit {
     return this.form.get('userType');
   }
 
-  // Custom validator for matching password and confirm password
   static passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const form = control as FormGroup;
     const password = form.get('password')?.value;
@@ -89,7 +86,6 @@ export class RegistrationComponent implements OnInit {
     return null;
   }
 
-  // Update error messages dynamically
   updateErrorMessage() {
     const emailControl = this.email;
 
@@ -100,8 +96,7 @@ export class RegistrationComponent implements OnInit {
     } else {
       this.emailErrorMessage = '';
     }
-
-    // Update error message for password mismatch
+    
     if (this.form.errors?.['mismatch']) {
       this.passwordMatchErrorMessage = 'Passwords do not match.';
     } else {
@@ -113,7 +108,6 @@ export class RegistrationComponent implements OnInit {
     return this.emailErrorMessage;
   }
 
-  // Form submission
   onSubmit() {
     if (this.form.valid) {
       this.http
@@ -122,7 +116,7 @@ export class RegistrationComponent implements OnInit {
           next: (response) => {
             console.log('Registration successful', response);
             alert('Registration successful');
-            this.router.navigate(['/login']); // Navigate to login after successful registration
+            this.router.navigate(['/login']);
           },
           error: (error) => {
             console.error('Error occurred during registration:', error);
@@ -131,7 +125,7 @@ export class RegistrationComponent implements OnInit {
         });
     } else {
       console.log('Form is invalid');
-      this.updateErrorMessage(); // Trigger error message update when form is invalid
+      this.updateErrorMessage();
     }
   }
 }

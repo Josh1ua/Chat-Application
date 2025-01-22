@@ -6,8 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NgFor } from '@angular/common';
-import { AuthService } from '../Services/AuthService'; // Ensure AuthService is correctly imported
-import { Router } from '@angular/router'; // Make sure to import Router
+import { AuthService } from '../Services/AuthService';
+import { Router } from '@angular/router';
 
 interface Request {
   _id: string;
@@ -22,7 +22,6 @@ interface Request {
 @Component({
   selector: 'app-requests',
   templateUrl: './request.component.html',
-  // styleUrls: ['./requests.component.css'] // Uncomment if you have a stylesheet
   imports: [
     MatCardModule,
     MatButtonModule,
@@ -34,24 +33,22 @@ interface Request {
 })
 export class RequestsComponent implements OnInit {
   requests: Request[] = [];
-  isAdmin: boolean = false; // Define the `isAdmin` variable to store role info
+  isAdmin: boolean = false; 
 
   constructor(private http: HttpClient, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
-    // Load requests when the component initializes
     this.loadRequests();
 
-    // Fetch the user's role from the API when the component loads
     this.authService.getUserInfo().subscribe(
       (response) => {
         const role = response.role;
         console.log(role?.toLowerCase() === 'admin');
-        this.isAdmin = role?.toLowerCase() === 'admin';  // Set role based on API response
+        this.isAdmin = role?.toLowerCase() === 'admin'; 
       },
       (error) => {
         console.error('Error fetching user info:', error);
-        this.router.navigate(['/login']); // Redirect to login if there's an error
+        this.router.navigate(['/login']);
       }
     );
   }
@@ -66,16 +63,13 @@ export class RequestsComponent implements OnInit {
   }
 
   approveRequest(request: Request, Role: string): void {
-    // Add the Role to the request object
     const payload = {
       ...request,
-      Role: Role, // Ensure Role is part of the payload explicitly
+      Role: Role,
     };
 
-    // Send the flattened payload directly
     this.http.post('http://localhost:5219/api/Request/approve', payload).subscribe(
       () => {
-        // Reload requests after approval
         this.loadRequests();
         window.alert(`Request approved successfully.`);
       },

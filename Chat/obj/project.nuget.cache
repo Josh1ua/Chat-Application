@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "v91ewxKdLpU=",
+  "dgSpecHash": "v6w1TZoEIr8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Joshua\\source\\repos\\Chat\\Chat\\Chat.csproj",
+  "projectFilePath": "C:\\Users\\Joshua\\source\\repos\\chat Application\\Chat\\Chat.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Joshua\\.nuget\\packages\\couchdb.net\\3.6.1\\couchdb.net.3.6.1.nupkg.sha512",
     "C:\\Users\\Joshua\\.nuget\\packages\\flurl\\4.0.0\\flurl.4.0.0.nupkg.sha512",
@@ -94,12 +94,5 @@
     "C:\\Users\\Joshua\\.nuget\\packages\\system.text.json\\9.0.0\\system.text.json.9.0.0.nupkg.sha512",
     "C:\\Users\\Joshua\\.nuget\\packages\\system.threading.channels\\8.0.0\\system.threading.channels.8.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json."
-    }
-  ]
+  "logs": []
 }

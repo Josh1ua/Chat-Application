@@ -1,10 +1,10 @@
 ﻿using Flurl.Http;
 using Chat.Models;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks; // Added for async/await usage
-using System; // Added for Console.WriteLine
-using System.Collections.Generic; // Added for List<T>
-using Newtonsoft.Json; // Added for JsonProperty attribute
+using System.Threading.Tasks;
+using System; 
+using System.Collections.Generic;
+using Newtonsoft.Json; 
 
 namespace Chat.Services
 {
@@ -12,8 +12,8 @@ namespace Chat.Services
     {
         private readonly string _couchDbUrl = "http://127.0.0.1:5984/";
         private readonly string _databaseName = "users";
-        private readonly string _username = "Joshua"; // Replace with CouchDB admin username
-        private readonly string _password = "1234"; // Replace with CouchDB admin password
+        private readonly string _username = "Joshua"; 
+        private readonly string _password = "1234"; 
 
         public CouchDbService()
         {
@@ -115,7 +115,7 @@ namespace Chat.Services
             }
             catch (FlurlHttpException ex) when (ex.StatusCode == 404)
             {
-                return null; // User not found
+                return null;
             }
             catch (FlurlHttpException ex)
             {
@@ -158,6 +158,33 @@ namespace Chat.Services
                 throw;
             }
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                var query = new
+                {
+                    selector = new { },
+                    fields = new[] { "fullName", "Email", "Approved" }, 
+                    limit = 1000 
+                };
+
+                var rawResponse = await $"{_couchDbUrl}{_databaseName}/_find"
+                    .WithBasicAuth(_username, _password)
+                    .PostJsonAsync(query)
+                    .ReceiveJson<CouchDbResponse<User>>();
+
+                return rawResponse.docs;
+            }
+            catch (FlurlHttpException ex)
+            {
+                Console.WriteLine($"Error retrieving all users: {ex.Message}");
+                throw;
+            }
+        }
+
+
 
 
 

@@ -6,6 +6,6 @@ namespace Chat.DTO
     public class ApproveRequestDto:UserDocument
     { 
 
-        public string Role { get; set; } = string.Empty; // User role to be updated
+        public string Role { get; set; } = string.Empty; 
     }
 }

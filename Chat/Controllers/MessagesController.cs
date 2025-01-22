@@ -18,20 +18,29 @@ public class MessagesController : ControllerBase
         _hubContext = hubContext;
     }
 
-    // POST: api/messages
     [HttpPost("sendmessage")]
-    public async Task<IActionResult> SendMessage([FromBody] Message message)
+    public async Task<IActionResult> SendMessage([FromBody] MessageModel message)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        message.Timestamp = DateTime.UtcNow;
+        message.timestamp = DateTime.UtcNow;
         _context.Messages.Add(message);
         await _context.SaveChangesAsync();
-        await _hubContext.Clients.All.SendAsync("ReceiveMessage", message);
+
+        if (message.MessageType == "group")
+        {
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", message);
+        }
+        else if (message.MessageType == "individual")
+        {
+            var userIds = new List<string> { message.receiver, message.sender };
+            await _hubContext.Clients.Users(userIds).SendAsync("ReceiveMessage", message);
+        }
+
         return Ok(message);
     }
 
-    // GET: api/messages
+
     [HttpGet("getmessage")]
     public async Task<IActionResult> GetMessages()
     {

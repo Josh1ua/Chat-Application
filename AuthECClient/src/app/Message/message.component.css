@@ -1,0 +1,92 @@
+.message-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .message-wrapper {
+    display: flex;
+  }
+  
+  .message-wrapper.sent {
+    justify-content: flex-end;
+  }
+  
+  .message-wrapper.received {
+    justify-content: flex-start;
+  }
+  
+  .message-card {
+    max-width: 60%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .message-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .message-card mat-card-header {
+    padding: 0;
+    font-weight: bold;
+  }
+  
+  .message-card mat-card-title {
+    color: #3f51b5;
+  }
+  
+  .message-card mat-card-subtitle {
+    font-size: 0.875rem;
+    color: #757575;
+  }
+  
+  .message-card mat-card-content {
+    margin-top: 16px;
+    color: #424242;
+    line-height: 1.5;
+  }
+  
+  .sent .message-card {
+    background-color: #e0f7fa;
+  }
+  
+  .received .message-card {
+    background-color: #fce4ec;
+  }
+  
+  .message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 500px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .message-form mat-form-field {
+    width: 100%;
+  }
+  
+  .message-form button {
+    align-self: flex-start;
+    background-color: #3f51b5;
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+  }
+  
+  .message-form button:hover {
+    background-color: #303f9f;
+  }
+  
+  .message-form button:disabled {
+    background-color: #d1d1d1;
+  }

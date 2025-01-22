@@ -19,7 +19,7 @@
     "Parameters": [
       {
         "Name": "message",
-        "Type": "Chat.Models.Message",
+        "Type": "Chat.Models.MessageModel",
         "IsRequired": true
       }
     ],
@@ -65,6 +65,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Api.Controllers.UsersController",
+    "Method": "GetAllUsers",
+    "RelativePath": "api/Users/get-all-users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
